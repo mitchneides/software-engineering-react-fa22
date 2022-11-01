@@ -4,7 +4,7 @@ import {
   findUserById
 } from "../services/users-service";
 
-describe('createUser', () => {
+describe.only('createUser', () => {
   // sample user to insert
   const ripley = {
     username: 'ellenripley',
@@ -15,18 +15,20 @@ describe('createUser', () => {
   // setup test before running test
   beforeAll(() => {
     // remove any/all users to make sure we create it in the test
-    return deleteUsersByUsername(ripley.username);
+//    return deleteUsersByUsername(ripley.username);
   })
 
   // clean up after test runs
   afterAll(() => {
     // remove any data we created
-    return deleteUsersByUsername(ripley.username);
+//    return deleteUsersByUsername(ripley.username);
   })
 
   test('can insert new users with REST API', async () => {
     // insert new user in the database
     const newUser = await createUser(ripley);
+
+    console.log(newUser);
 
     // verify inserted user's properties match parameter user
     expect(newUser.username).toEqual(ripley.username);
