@@ -4,8 +4,6 @@ import {HashRouter} from "react-router-dom";
 import {findAllTuits} from "../services/tuits-service";
 import axios from "axios";
 
-jest.mock('axios');
-
 const MOCKED_USERS = [
   "AliceTemp", "BobTemp", "CharlieTemp"
 ];
@@ -46,30 +44,13 @@ const MOCKED_TUITS = [
   }
 ];
 
-test('tuit list renders static tuit array', () => {
-    render(
-      <HashRouter>
-        <Tuits tuits={MOCKED_TUITS}/>
-      </HashRouter>);
-      const temp = "Charlie's Temp Tuit";
-      const linkElement = screen.getByText(temp);
-      expect(linkElement).toBeInTheDocument();
-});
-
-// please note that 'tuit list renders async' is tested in the file
-// 'tuit-list2.test.js due to the error with "jest.mock('axios')"
-
-test('tuit list renders mocked', async () => {
-  axios.get.mockImplementation(() =>
-    Promise.resolve({ data: {tuits: MOCKED_TUITS} }));
-  const response = await findAllTuits();
-  const tuits = response.tuits;
-
+test('tuit list renders async', async () => {
+  const tuits = await findAllTuits();
   render(
     <HashRouter>
-      <Tuits tuits={tuits}/>
+      <Tuits tuits={MOCKED_TUITS}/>
     </HashRouter>);
   const temp = "Charlie's Temp Tuit";
-  const tuit = screen.getByText(temp);
-  expect(tuit).toBeInTheDocument();
+  const linkElement = screen.getByText(temp);
+  expect(linkElement).toBeInTheDocument();
 });
