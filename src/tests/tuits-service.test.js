@@ -169,14 +169,14 @@ describe('findTuitById', () => {
 describe('findAllTuits', () => {
     // sample tuits to retrieve
     let sampleTuits = [
-        {tuit: 'test1', postedBy: '633c41de89045f21193ea004'},
-        {tuit: 'test2', postedBy: '633c41fa89045f21193ea006'},
-        {tuit: 'test3', postedBy: '633c421b89045f21193ea008'}
+        {tuit: 'test1', postedBy: '633c41de89045f21193ea004', _id: '111111111111111111111111'},
+        {tuit: 'test2', postedBy: '633c41fa89045f21193ea006', _id: '222222222222222222222222'},
+        {tuit: 'test3', postedBy: '633c421b89045f21193ea008', _id: '333333333333333333333333'}
     ]
 
     // setup before running
     beforeAll(() => {
-        sampleTuits = sampleTuits.map(async t => {
+        sampleTuits.map(async t => {
             t = await createTuit(t.postedBy, t)
         })
         return sampleTuits
@@ -184,9 +184,13 @@ describe('findAllTuits', () => {
 
     // clean up after test runs
     afterAll (() => {
+        // tracks promises to fulfill before returning
+        let promises = [];
         sampleTuits.map(t =>
-            deleteTuit(t._id)
+            promises.push(deleteTuit(t._id))
         )
+        // Return once all promises fulfilled
+        return Promise.all(promises)
     })
 
     // run test
