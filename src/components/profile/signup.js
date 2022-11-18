@@ -13,15 +13,15 @@ const Signup = () => {
   return (
     <div>
       <h1>Signup</h1>
-      <input onChange={(e) =>
+      <input className="mb-2 form-control" onChange={(e) =>
         setNewUser({...newUser,
-          username: e.target.value})}/>
-      <input onChange={(e) =>
+          username: e.target.value})} placeholder="username"/>
+      <input className="mb-2 form-control" onChange={(e) =>
         setNewUser({...newUser,
-          password: e.target.value})}/>
-      <input onChange={(e) =>
+          password: e.target.value})} placeholder="password"/>
+      <input className="mb-2 form-control" onChange={(e) =>
         setNewUser({...newUser,
-          email: e.target.value})}/>
+          email: e.target.value})} placeholder="email"/>
       <button onClick={signup}>
         Signup</button>
     </div>
