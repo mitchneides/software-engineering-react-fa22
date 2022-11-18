@@ -104,7 +104,6 @@ describe('findUserById',  () => {
   });
 });
 
-
 describe('findAllUsers',  () => {
 
   // sample users we'll insert to then retrieve
@@ -113,24 +112,30 @@ describe('findAllUsers',  () => {
   ];
 
   // setup data before test
-  beforeAll(() =>
+  beforeAll(() => {
     // insert several known users
-    usernames.map(username =>
-      createUser({
-        username,
-        password: `${username}123`,
-        email: `${username}@stooges.com`
-      })
+    usernames.map(
+        username =>
+            createUser(
+                {
+                  username,
+                  password: `${username}123`,
+                  email: `${username}@stooges.com`
+                })
     )
-  );
+  });
 
   // clean up after ourselves
-  afterAll(() =>
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
+  afterAll(() => {
+    let promises = []
     // delete the users we inserted
-    usernames.map(username =>
-      deleteUsersByUsername(username)
-    )
-  );
+    usernames.map(username => {
+      let deletePromise = deleteUsersByUsername(username)
+      promises.push(deletePromise)
+    })
+    return Promise.all(promises)
+  });
 
   test('can retrieve all users from REST API', async () => {
     // retrieve all the users

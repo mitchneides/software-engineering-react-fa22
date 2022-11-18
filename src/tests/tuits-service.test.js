@@ -1,211 +1,245 @@
-import {
-  createTuit,
-  deleteTuit, findTuitById,
-  findAllTuits
-} from "../services/tuits-service";
-import {
-    deleteUsersByUsername, createUser
-} from "../services/users-service";
+import {createTuit, deleteTuit, findTuitById, findAllTuits} from "../services/tuits-service";
+import {createUser, deleteUsersByUsername} from "../services/users-service";
 
+// Create random 24 hexadecimal id for tuit
+// Source: https://stackoverflow.com/questions/58325771/how-to-generate-random-hex-string-in-javascript
+const genRanHex = () => [...Array(24)]
+        .map(() =>
+                 Math.floor(Math.random() * 16).toString(16)).join('');
 
-describe('createTuit', () => {
-    // sample tuit to insert
-    const sampleTuit = {
-        _id: '111111111111111111111111',
-        tuit: "Ripley's test tuit",
-        postedOn: '2022-11-04T00:00:00.000Z'
-    };
+describe('can create tuit with REST API', () => {
+    // Mock tuit data
+    const tuitData = {
+        _id: genRanHex(),
+        tuit: 'Test tuit for create tuit with REST API',
+        postedOn: '1927-10-31T00:00:00.000Z'
+    }
 
-    // sample user to author the tuit
-    const ripley = {
-        username: 'ellenripley',
-        password: 'lv426',
-        email: 'ellenripley@aliens.com'
-    };
+    // Mock user data
+    const albert = {
+        username: 'albert',
+        password: 'albert123',
+        email: 'albert@einstein.org'
+    }
 
-    // setup before running
     beforeAll(() => {
-        // tracks promises to fulfill before returning
-        let promises = [];
-        // remove any/all tuits to make sure we create it in the test
-        promises.push(deleteTuit(sampleTuit._id));
-        // remove user
-        promises.push(deleteUsersByUsername(ripley.username));
-        // Return once all promises fulfilled
+        let promises = []
+
+        // Remove test user and test tuit
+        promises.push(deleteUsersByUsername(albert.username))
+        promises.push(deleteTuit(tuitData._id))
+
+        // Wait for all promises to be completed
         return Promise.all(promises)
     })
 
-    // clean up after test runs
-    afterAll (() => {
-        // tracks promises to fulfill before returning
-        let promises = [];
-        // remove any/all tuits to make sure we create it in the test
-        promises.push(deleteTuit(sampleTuit._id));
-        // remove user
-        promises.push(deleteUsersByUsername(ripley.username));
-        // Return once all promises fulfilled
+    afterAll(() => {
+        let promises = []
+
+        // Remove test user and test tuit
+        promises.push(deleteUsersByUsername(albert.username))
+        promises.push(deleteTuit(tuitData._id))
+
+        // Wait for all promises to be completed
         return Promise.all(promises)
     })
 
-    // run test
-    test('can create a new tuit with REST API', async () => {
-        // create user to author tuit
-        const newUser = await createUser(ripley);
-        // insert new tuit in the database
-        const newTuit = await createTuit(newUser._id, sampleTuit);
+    test('can create tuit with REST API', async () => {
+        // Create new user using user data
+        const testUser = await createUser(albert)
 
-        // verify inserted tuit's properties
-        expect(newTuit.tuit).toEqual(newTuit.tuit);
-        expect(newTuit.postedBy).toEqual(newUser._id);
-        expect(newTuit.postedOn).toEqual(newTuit.postedOn);
-    });
+        // Create new tuit using tuit data and posted by new user
+        const testTuit = await createTuit(testUser._id, tuitData)
+
+        // Create tuit test
+        expect(testTuit.tuit).toEqual(tuitData.tuit)
+        expect(testTuit.postedBy).toEqual(testUser._id)
+        expect(testTuit.postedOn).toEqual(tuitData.postedOn)
+    })
 });
 
-describe('deleteTuit', () => {
-    // sample tuit to insert
-    const sampleTuit = {
-        _id: '111111111111111111111111',
-        tuit: "El Jefe",
-        postedOn: '2022-11-04T00:00:00.000Z'
-    };
+describe('can delete tuit with REST API', () => {
+    //  Mock tuit data
+    const tuitData = {
+        _id: genRanHex(),
+        tuit: 'Test tuit for delete tuit with REST API',
+        postedOn: '2022-10-31T00:00:00.000Z'
+    }
 
-    // sample user to author the tuit
-    const jeff = {
-        username: 'Jeff',
-        password: 'jeffe123',
-        email: 'jeff@jeffe.com'
-    };
+    // Mock user data
+    const larry = {
+        username: 'larry',
+        password: 'larry123',
+        email: 'larry@david.com'
+    }
 
-    // setup before running
+    // Set up before test
     beforeAll(async () => {
-        // create user to author tuit
-        const newUser = await createUser(jeff)
-        // Return a new tuit posted by the new user
-        return createTuit(newUser._id, sampleTuit)
+        // Create a new user using user data
+        const testUser = await createUser(larry)
+        // Return a new tuit with tuit data posted by new user
+        return createTuit(testUser._id, tuitData)
     })
 
-    // clean up after test runs
-    afterAll (() => {
-        // tracks promises to fulfill before returning
-        let promises = [];
-        // remove any/all tuits to make sure we create it in the test
-        promises.push(deleteTuit(sampleTuit._id));
-        // remove user
-        promises.push(deleteUsersByUsername(jeff.username));
-        // Return once all promises fulfilled
+    // Clean up after test
+    afterAll(() => {
+        let promises = []
+
+        // Remove test user and test tuit
+        promises.push(deleteUsersByUsername(larry.username))
+        promises.push(deleteTuit(tuitData._id))
+
+        // Wait for all promises to be completed
         return Promise.all(promises)
     })
 
-    // run test
-    test('can delete tuit with REST API', async () => {
-        // Delete the sample tuit
-        const status = await deleteTuit(sampleTuit._id);
+    test('can delete tuit wtih REST API', async () => {
+        // Delete tuit test
+        const status = await deleteTuit(tuitData._id);
         expect(status.deletedCount).toBeGreaterThanOrEqual(1);
     })
-
 });
 
-describe('findTuitById', () => {
-    // sample tuit to insert
-    const sampleTuit = {
-        _id: '111111111111111111111111',
-        tuit: "Bubble's test tuit",
-        postedOn: '2022-11-04T00:00:00.000Z'
-    };
+describe('can retrieve a tuit by their primary key with REST API', () => {
+    //  Mock tuit data
+    const tuitData = {
+        _id: genRanHex(),
+        tuit: 'Test to retrieve tuit by primary key with REST API',
+        postedOn: '2022-11-01T00:00:00.000Z'
+    }
 
-    // sample user to author the tuit
-    const bubbles = {
-        username: 'Bubbles',
-        password: 'bubs321',
-        email: 'bubbles@sunnyvale.com'
-    };
+    // Mock user data
+    const joffrey = {
+        username: 'joffrey',
+        password: 'king123',
+        email: 'joffrey@got.com'
+    }
 
-    // setup before running
     beforeAll(async () => {
-        // tracks promises to fulfill before returning
-        let promises = [];
-        // remove any/all tuits to make sure we create it in the test
-        promises.push(deleteTuit(sampleTuit._id));
-        // remove user
-        promises.push(deleteUsersByUsername(bubbles.username));
-        // Return once all promises fulfilled
+        let promises = []
+
+        // Remove test user and test tuit
+        promises.push(deleteUsersByUsername(joffrey.username))
+        promises.push(deleteTuit(tuitData._id))
+
+        // Wait for all promises to be completed
         return Promise.all(promises)
     })
 
-    // clean up after test runs
-    afterAll (() => {
-        // tracks promises to fulfill before returning
-        let promises = [];
-        // remove any/all tuits to make sure we create it in the test
-        promises.push(deleteTuit(sampleTuit._id));
-        // remove user
-        promises.push(deleteUsersByUsername(bubbles.username));
-        // Return once all promises fulfilled
+    afterAll(() => {
+        let promises = []
+
+        // Remove test user and test tuit
+        promises.push(deleteUsersByUsername(joffrey.username))
+        promises.push(deleteTuit(tuitData._id))
+
+        // Wait for all promises to be completed
         return Promise.all(promises)
     })
 
-    // run test
     test('can retrieve a tuit by their primary key with REST API', async () => {
-        const testUser = await createUser(bubbles)
-        const testTuit = await createTuit(testUser._id, sampleTuit)
+        const testUser = await createUser(joffrey)
+        const testTuit = await createTuit(testUser._id, tuitData)
 
-        // Verify test tuit matches sample data
-        expect(testTuit._id).toEqual(sampleTuit._id)
-        expect(testTuit.tuit).toEqual(sampleTuit.tuit)
+        // Verify tuit match tuitData
+        expect(testTuit._id).toEqual(tuitData._id)
+        expect(testTuit.tuit).toEqual(tuitData.tuit)
         expect(testTuit.postedBy).toEqual(testUser._id)
-        expect(testTuit.postedOn).toEqual(sampleTuit.postedOn)
+        expect(testTuit.postedOn).toEqual(tuitData.postedOn)
 
-        // Retrieve tuit by its ID
+        // Retrieve the tuit from the database by primary key
         const existingTuit = await findTuitById(testTuit._id)
 
-        // Verify retrieved tuit also matches sample data
-        expect(existingTuit._id).toEqual(sampleTuit._id)
-        expect(existingTuit.tuit).toEqual(sampleTuit.tuit)
+        // Verify retrieved tuit matches tuitData
+        expect(existingTuit._id).toEqual(tuitData._id)
+        expect(existingTuit.tuit).toEqual(tuitData.tuit)
         expect(existingTuit.postedBy).toEqual(testUser)
-        expect(existingTuit.postedOn).toEqual(sampleTuit.postedOn)
+        expect(existingTuit.postedOn).toEqual(tuitData.postedOn)
     })
 });
 
-describe('findAllTuits', () => {
-    // sample tuits to retrieve
-    let sampleTuits = [
-        {tuit: 'test1', postedBy: '633c41de89045f21193ea004', _id: '111111111111111111111111'},
-        {tuit: 'test2', postedBy: '633c41fa89045f21193ea006', _id: '222222222222222222222222'},
-        {tuit: 'test3', postedBy: '633c421b89045f21193ea008', _id: '333333333333333333333333'}
+describe('can retrieve all tuits with REST API', () => {
+    // Mock tuit data
+    const tuitData = [
+        {
+            _id: genRanHex(),
+            tuit: 'Retrieve all tuits test 1',
+            postedOn: '2022-11-01T00:00:00.000Z'
+        },
+        {
+            _id: genRanHex(),
+            tuit: 'Retrieve all tuits test 2',
+            postedOn: '2022-11-01T00:00:00.000Z'
+        },
+        {
+            _id: genRanHex(),
+            tuit: 'Retrieve all tuits test 3',
+            postedOn: '2022-11-01T00:00:00.000Z'
+        }
     ]
 
-    // setup before running
-    beforeAll(() => {
-        sampleTuits.map(async t => {
-            t = await createTuit(t.postedBy, t)
-        })
-        return sampleTuits
-    })
+    // Mock user data
+    const zoe = {
+        username: 'zoe',
+        password: 'zoe101',
+        email: 'zoe@nickelodeon.com'
+    }
 
-    // clean up after test runs
-    afterAll (() => {
-        // tracks promises to fulfill before returning
-        let promises = [];
-        sampleTuits.map(t =>
-            promises.push(deleteTuit(t._id))
+    beforeAll(() => {
+        let promises = []
+
+        // Delete user if it exists before test
+        promises.push(deleteUsersByUsername(zoe.username))
+
+        // Delete tuits with ids from tuitIds
+        tuitData.map(
+            tuit =>
+                promises.push(deleteTuit(tuit._id))
         )
-        // Return once all promises fulfilled
         return Promise.all(promises)
     })
 
-    // run test
-    test('can retrieve all tuits with REST API', async () => {
-        const allTuits = await findAllTuits();
-        expect(allTuits.length).toBeGreaterThanOrEqual(sampleTuits.length);
+    afterAll(() => {
+        let promises = []
 
-        const insertedTuits = allTuits.filter( t =>
-            sampleTuits.indexOf(t.tuit) >= 0);
+        // Delete user if it exists before test
+        promises.push(deleteUsersByUsername(zoe.username))
 
-        insertedTuits.forEach(t => {
-            const someT = sampleTuits.find(someT => someT === t.tuit);
-            expect(t.tuit).toEqual(someT.tuit);
-            expect(t.postedBy).toEqual(someT.postedBy);
-        })
+        // Delete tuits with ids from tuitIds
+        tuitData.map(
+            tuit => promises.push(deleteTuit(tuit._id)))
+
+        // Wait for promises to be completed
+        return Promise.all(promises)
     })
 
+    test('can retrieve all tuits with REST API', async () => {
+        // Create test user from mock zoe data
+        const testUser = await createUser(zoe);
+
+        // Create mock tuits from tuitData
+        tuitData.map(
+            tuit => createTuit(testUser._id, tuit)
+        )
+
+        // Find all tuits in database
+        const allTuits = await findAllTuits();
+
+        // Verify tuits created have been inserted
+        expect(allTuits.length).toBeGreaterThanOrEqual(tuitData.length);
+
+        // Check all tuits in database and collect all tuits inserted
+        const tuitIdData = tuitData.map(tuit => tuit._id)
+        const tuitsInserted = allTuits.filter(
+            tuit => tuitIdData.indexOf(tuit._id) >= 0
+        )
+
+        // compare the actual tuits in database with the ones we sent
+        tuitsInserted.forEach(insertedTuit => {
+            const sentTuit = tuitData.find(data => data._id === insertedTuit._id);
+            expect(insertedTuit.tuit).toEqual(sentTuit.tuit)
+            expect(insertedTuit.postedBy).toEqual(testUser)
+            expect(insertedTuit.postedOn).toEqual(sentTuit.postedOn)
+        })
+    })
 });
