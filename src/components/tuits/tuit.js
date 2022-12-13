@@ -1,9 +1,9 @@
 import React from "react";
-import TuitStats from "./tuit-stats";
 import TuitImage from "./tuit-image";
 import TuitVideo from "./tuit-video";
+import TuitStats from "./tuit-stats"
 
-const Tuit = ({tuit, deleteTuit, likeTuit}) => {
+const Tuit = ({tuit, deleteTuit, likeTuit, dislikeTuit}) => {
   return(
     <li className="p-2 ttr-tuit list-group-item d-flex rounded-0">
       <div className="pe-2">
@@ -21,7 +21,7 @@ const Tuit = ({tuit, deleteTuit, likeTuit}) => {
           @{tuit.postedBy && tuit.postedBy.username} -
           { tuit.postedOn}</h2>
         {tuit.tuit}
-          <TuitStats tuit={tuit} likeTuit={likeTuit}/>
+          <TuitStats tuit={tuit} likeTuit={likeTuit} dislikeTuit={dislikeTuit}/>
 
           {
           tuit.youtube &&
