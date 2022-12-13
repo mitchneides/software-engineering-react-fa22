@@ -1,10 +1,11 @@
 import * as service from "../../services/auth-service"
-import {Route, Routes, useNavigate} from "react-router-dom";
+import {Route, Routes, useNavigate, useLocation, Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import MyTuits from "./my-tuits";
-// import MyLikes from "./my-likes";
+import MyLikes from "./my-likes"
 
 const Profile = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const [profile, setProfile] = useState({});
   useEffect(async () => {
@@ -27,9 +28,17 @@ const Profile = () => {
         <button onClick={logout}>
           Logout
         </button>
-          <Routes>
-              <Route path="/mytuits" element={<MyTuits/>}/>
 
+          <ul className="mt-4 nav nav-pills nav-fill">
+              <li className="nav-item">
+                  <Link to="/profile/mytuits"
+                        className={`nav-link ${location.pathname.indexOf('mytuits') >= 0 ? 'active': ''}`}>
+                      Tuits</Link>
+              </li>
+          </ul>
+          <Routes>
+              <Route path="/mytuits"
+                     element={<MyTuits/>}/>
           </Routes>
       </div>
   );
