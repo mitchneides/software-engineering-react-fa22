@@ -31,7 +31,7 @@ describe('test rendering dislike button', () => {
         </HashRouter>
     )
 
-    test('disliked tuits render', () => {
+    test('dislike tuits render', () => {
         const dislikes = screen.getByText(MOCK_DISLIKED_TUIT.stats.dislikes);
         expect(dislikes).toBeInTheDocument();
     })
