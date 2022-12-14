@@ -1,5 +1,5 @@
 /**
- * @file Tests dislike button
+ * @file Tests like button
  */
 
 import React from "react";
@@ -7,9 +7,9 @@ import {render, screen} from "@testing-library/react";
 import {HashRouter} from "react-router-dom";
 import Tuit from "../components/tuits/tuit";
 
-const MOCK_DISLIKED_TUIT = {
+const MOCK_LIKED_TUIT = {
     _id: "111111111111111111111111",
-    tuit: "Testing dislike button",
+    tuit: "Testing like button",
     postedBy: {
         _id: "000000000000000000000001",
         username: "test",
@@ -24,15 +24,15 @@ const MOCK_DISLIKED_TUIT = {
     }
 }
 
-describe('test rendering dislike button', () => {
+describe('test rendering like button', () => {
     render(
         <HashRouter>
-            <Tuit tuit={MOCK_DISLIKED_TUIT}/>
+            <Tuit tuit={MOCK_LIKED_TUIT}/>
         </HashRouter>
     )
 
-    test('dislike tuits render', () => {
-        const dislikes = screen.getByText(MOCK_DISLIKED_TUIT.stats.dislikes);
-        expect(dislikes).toBeInTheDocument();
+    test('liked tuits render', () => {
+        const likes = screen.getByText(MOCK_LIKED_TUIT.stats.likes);
+        expect(likes).toBeInTheDocument();
     })
 })
