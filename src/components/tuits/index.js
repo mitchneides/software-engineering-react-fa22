@@ -4,8 +4,7 @@ import Tuit from "./tuit";
 import * as likesService from "../../services/likes-service";
 import * as dislikesService from "../../services/dislikes-service"
 
-const Tuits = ({tuits = [], deleteTuit,
-                   refreshTuits}) => {
+const Tuits = ({tuits = [], refreshTuits, deleteTuit}) => {
 
     const likeTuit = (tuit) =>
         likesService
